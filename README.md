@@ -1,5 +1,3 @@
-### ☢️ [Wikipedia is a controlled CIA Pyscho](https://www.unz.com/aanglin/the-cia-is-running-wikipedia-wow-what-a-shocker/) ☢️
-
 # Wikiless
 
 ![hidden_dimension](https://github.com/user-attachments/assets/4093053d-a7c4-45aa-8860-ea0f64a841e9)

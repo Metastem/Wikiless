@@ -6,14 +6,14 @@ module.exports = (app, utils) => {
 
   // Rate limiter for PDF download route: max 100 requests per 15 minutes per IP
   const pdfRateLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // limit each IP to 100 requests per windowMs
+    windowMs: 60 * 60 * 1000, // 60 minutes
+    max: 20, // limit each IP to 100 requests per windowMs
   });
 
   // Rate limiter for general GET route: max 100 requests per 15 minutes per IP
   const generalRateLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // limit each IP to 100 requests per windowMs
+    max: 400, // limit each IP to 400 requests per windowMs
   });
 
   app.all(/.*/, (req, res, next) => {
@@ -167,7 +167,7 @@ module.exports = (app, utils) => {
   // Rate limiter for /about route: max 100 requests per 15 minutes per IP
   const aboutLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // limit each IP to 100 requests per windowMs
+    max: 300, // limit each IP to 300 requests per windowMs
     standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
     legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   });

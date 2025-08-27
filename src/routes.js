@@ -3,6 +3,7 @@ module.exports = (app, utils) => {
   const path = require('path')
   const { URL } = require('url')
   const rateLimit = require('express-rate-limit')
+  const crypto = require('crypto')
 
   // Rate limiter for PDF download route: max 100 requests per 15 minutes per IP
   const pdfRateLimiter = rateLimit({
@@ -37,6 +38,12 @@ module.exports = (app, utils) => {
 
     return next()
   })
+
+  function md5HashParts(fileName) {
+    const normalized = fileName.replace(/ /g, '_');
+    const h = crypto.createHash('md5').update(normalized, 'utf8').digest('hex');
+    return [h[0], h.slice(0,2)];
+  }
 
   app.get(/.*/, generalRateLimiter, async (req, res, next) => {
     if(req.url.startsWith('/w/load.php')) {
@@ -101,8 +108,10 @@ module.exports = (app, utils) => {
   app.get('/wiki/:page/:sub_page', (req, res, next) => {
     const pageName = req.params.page;
     if (pageName && pageName.startsWith('File:')) {
-        const encodedFileName = encodeURIComponent(pageName.split(':')[1])
-        const mediaPath = `/media/wikipedia/commons/thumb/b/b5/${encodedFileName}`
+        const rawName = pageName.split(':')[1]
+        const encodedFileName = encodeURIComponent(rawName)
+        const [h1, h2] = md5HashParts(rawName)
+        const mediaPath = `/media/wikipedia/commons/${h1}/${h2}/${encodedFileName}`
         return res.redirect(mediaPath)
     }
     return handleWikiPage(req, res, '/wiki/')
@@ -111,8 +120,10 @@ module.exports = (app, utils) => {
   app.get('/wiki/:page', (req, res, next) => {
     const pageName = req.params.page;
     if (pageName && pageName.startsWith('File:')) {
-        const encodedFileName = encodeURIComponent(pageName.split(':')[1])
-        const mediaPath = `/media/wikipedia/commons/thumb/b/b5/${encodedFileName}`
+        const rawName = pageName.split(':')[1]
+        const encodedFileName = encodeURIComponent(rawName)
+        const [h1, h2] = md5HashParts(rawName)
+        const mediaPath = `/media/wikipedia/commons/${h1}/${h2}/${encodedFileName}`
         return res.redirect(mediaPath)
     }
     return handleWikiPage(req, res, '/wiki/')

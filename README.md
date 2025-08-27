@@ -16,7 +16,7 @@
 To run Wikiless, follow these steps:
 
 ```
-https://github.com/Metastem/Wikiless/wiki
+https://github.com/V4NT-ORG/Wikiless/wiki
 ```
 
 # Usage

@@ -188,7 +188,6 @@ module.exports = (app, utils) => {
   })
 
   app.get('/preferences', (req, res, next) => {
-    return res.send(preferencesPage(req, res))
     // Pass CSRF token to preferences page
     return res.send(preferencesPage(req, res, req.csrfToken()))
 })

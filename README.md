@@ -33,6 +33,7 @@ Contributions are welcome!
 - [ ] - When hosted with another default language, all other language links break - [#161](https://github.com/Metastem/Wikiless/issues/161)
 - [ ] - Support for other Wikipedia Styles - [#25](https://github.com/Metastem/Wikiless/issues/25)
 - [ ] - Conditional edition redirection if an insance is banned - [#21](https://github.com/Metastem/Wikiless/issues/21)
+- [ ] - recurring download errors for MediaWiki CSS files
 
 # License
 

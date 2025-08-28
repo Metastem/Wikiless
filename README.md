@@ -25,7 +25,14 @@ Visit ```http://localhost:8180``` in your web browser to use Wikiless locally.
 
 # Contributing
 
-Contributions are welcome! 
+Contributions are welcome!
+
+# TODO
+
+- [x] - Images not loading when clicking on their thumbnails - [#161](https://github.com/Metastem/Wikiless/issues/161) and [#162](https://github.com/Metastem/Wikiless/pull/162)
+- [ ] - When hosted with another default language, all other language links break - [#161](https://github.com/Metastem/Wikiless/issues/161)
+- [ ] - Support for other Wikipedia Styles - [#25](https://github.com/Metastem/Wikiless/issues/25)
+- [ ] - Conditional edition redirection if an insance is banned - [#21](https://github.com/Metastem/Wikiless/issues/21)
 
 # License
 

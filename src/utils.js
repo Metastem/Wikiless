@@ -94,7 +94,7 @@ module.exports = function(redis) {
   }
 
   this.processHtml = async (data, url, params, lang) => {
-    if(validHtml(data.html)) {
+    if(this.validHtml(data.html)) {
       const decoded_url = url
       url = encodeURI(url)
       if(params) {
@@ -122,7 +122,7 @@ module.exports = function(redis) {
       for(let i = 0; i < links.length; i++) {
         let href = links[i].getAttribute('href')
         if(href && (href.startsWith('/wiki/') || href.startsWith('/w/'))) {
-          href = `${protocol}${config.domain}${href}`
+          href = `https://${config.domain}${href}`
           let u = new URL(href)
           u.searchParams.append('lang', lang)
           href = `${u.pathname}${u.search}`
@@ -172,12 +172,18 @@ module.exports = function(redis) {
       */
       let lang_links = data.html.querySelectorAll('#p-lang .interlanguage-link a')
       for(let i = 0; i < lang_links.length; i++) {
-        let href = lang_links[i].getAttribute('href')
-        let lang_code = href.split('wikipedia.org')[0].split('//')[1]
-        href = href.replace(lang_code, '')
-        href = `${href}?lang=${lang_code.slice(0, -1)}`
-        lang_links[i].setAttribute('href', href)
-      }
+      let href = lang_links[i].getAttribute('href')
+      if (href && href.includes('wikipedia.org')) {
+       // Extract the language code from the subdomain (e.g., "de" from "https://de.wikipedia.org/wiki/Page")
+       let lang_code = href.split('://')[1].split('.wikipedia.org')[0]
+       // Extract the page path from the original URL (e.g., "/wiki/Page")
+       let page_path = href.split('wikipedia.org')[1]
+       // Create a relative URL with the language parameter
+       href = `${page_path}?lang=${lang_code}`
+       lang_links[i].setAttribute('href', href)
+       }
+   }
+
 
       data.html = data.html.toString()
 
@@ -247,7 +253,7 @@ module.exports = function(redis) {
     }
 
     url = new URL(`https://${domain}${wikimedia_path}`)
-    const file = await saveFile(url, path)
+    const file = await this.saveFile(url, path)
 
     if(file.success === true) {
       return { success: true, path: file.path }
@@ -298,7 +304,7 @@ module.exports = function(redis) {
   }
 
   this.handleWikiPage = async (req, res, prefix) => {
-    let lang = getLang(req)
+    let lang = this.getLang(req)
 
     if(lang) {
       if(Array.isArray(lang)) {
@@ -308,7 +314,7 @@ module.exports = function(redis) {
       }
     }
 
-    if(!validLang(lang)) {
+    if(!this.validLang(lang)) {
       return res.status(500).send('invalid lang')
     }
 
@@ -326,7 +332,7 @@ module.exports = function(redis) {
         }
 
         // language variants
-        if(typeof validLang(lang) === 'string') {
+        if(typeof this.validLang(lang) === 'string') {
           wiki = lang
           lang = lang.split('-')[0]
         }
@@ -353,7 +359,7 @@ module.exports = function(redis) {
     // set skin
     params.set('useskin', 'vector')
     const up_params = params.toString()
-    const result = await download(url, up_params)
+    const result = await this.download(url, up_params)
 
     if(result.success !== true) {
       if(result.reason === 'REDIRECT' && result.url) {
@@ -381,14 +387,14 @@ module.exports = function(redis) {
     }
 
     if(result.processed === true) {
-      return res.send(applyUserMods(result.html, req.cookies.theme, lang))
+      return res.send(this.applyUserMods(result.html, req.cookies.theme, lang))
     }
 
     // wikiless params
     const down_params = new URLSearchParams(req.query).toString()
-    const process_html = await processHtml(result, url, down_params, lang, req.cookies)
+    const process_html = await this.processHtml(result, url, down_params, lang, req.cookies)
     if(process_html.success === true) {
-      return res.send(applyUserMods(process_html.html.toString(), req.cookies.theme, lang))
+      return res.send(this.applyUserMods(process_html.html.toString(), req.cookies.theme, lang))
     }
     return res.status(500).send(process_html.reason)
   }
@@ -452,7 +458,7 @@ module.exports = function(redis) {
   }
 
   this.customLogos = (url, lang) => {
-    if(validLang(lang)) {
+    if(this.validLang(lang)) {
       return path.join(__dirname, '..', 'static', lang, path.basename(url))
     }
     return false
@@ -477,7 +483,7 @@ module.exports = function(redis) {
   this.preferencesPage = (req, res) => {
     const { default_lang, theme } = req.cookies
     let lang_select = '<select id="default_lang" name="default_lang">'
-    const valid_langs = validLang('', true)
+    const valid_langs = this.validLang('', true)
 
     for(let i = 0; i < valid_langs.length; i++) {
       let selected = ''

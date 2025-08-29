@@ -34,6 +34,7 @@ Contributions are welcome!
 - [ ] - Support for other Wikipedia Styles - [#25](https://github.com/Metastem/Wikiless/issues/25)
 - [ ] - Conditional edition redirection if an insance is banned - [#21](https://github.com/Metastem/Wikiless/issues/21)
 - [ ] - recurring download errors for MediaWiki CSS files
+- [ ] - Search route bug - [#166](https://github.com/Metastem/Wikiless/issues/166)
 
 # License
 

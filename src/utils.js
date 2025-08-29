@@ -173,11 +173,22 @@ module.exports = function(redis) {
       let lang_links = data.html.querySelectorAll('#p-lang .interlanguage-link a')
       for(let i = 0; i < lang_links.length; i++) {
       let href = lang_links[i].getAttribute('href')
-      if (href && href.includes('wikipedia.org')) {
+      // Check that href is a Wikipedia URL using hostname (not substring)
+      let hostname = "";
+      try {
+        // If relative link, prepend https://en.wikipedia.org as base for parsing
+        // (Assume "en" as fallback; you may want to adjust based on context)
+        let urlObj = new URL(href, 'https://en.wikipedia.org');
+        hostname = urlObj.hostname;
+      } catch(e) {
+        continue; // skip invalid URLs
+      }
+      // Match direct subdomains like de.wikipedia.org/...
+      if (hostname && /^[a-z\-]+\.wikipedia\.org$/.test(hostname)) {
        // Extract the language code from the subdomain (e.g., "de" from "https://de.wikipedia.org/wiki/Page")
-       let lang_code = href.split('://')[1].split('.wikipedia.org')[0]
+       let lang_code = hostname.split('.wikipedia.org')[0]
        // Extract the page path from the original URL (e.g., "/wiki/Page")
-       let page_path = href.split('wikipedia.org')[1]
+       let page_path = urlObj.pathname
        // Create a relative URL with the language parameter
        href = `${page_path}?lang=${lang_code}`
        lang_links[i].setAttribute('href', href)

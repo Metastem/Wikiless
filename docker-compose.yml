@@ -16,13 +16,18 @@ services:
       - no-new-privileges:true
     cap_drop:
       - ALL
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
     depends_on:
         - wikiless_redis
 
   wikiless_redis:
     container_name: wikiless_redis
     hostname: wikiless_redis
-    image: redis:latest
+    image: redis:7.4-alpine
     restart: always
     networks:
       - wikiless_net

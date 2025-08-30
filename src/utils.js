@@ -1,5 +1,5 @@
 module.exports = function(redis) {
-  const config = require('../config')
+  const config = require('../wikiless.config')
   const parser = require('node-html-parser')
   const fs = require('fs').promises
   const { createWriteStream, existsSync } = require('fs')

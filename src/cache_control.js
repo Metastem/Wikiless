@@ -1,5 +1,5 @@
 module.exports.removeCacheFiles = function() {
-  const config = require('../config');
+  const config = require('../wikiless.config');
 
   async function deleteStatic() {
     const fs = require('fs');

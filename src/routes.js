@@ -1,6 +1,7 @@
 module.exports = (app, utils) => {
   const config = require('../wikiless.config')
   const path = require('path')
+  const crypto = require('crypto');
 
   app.all(/.*/, (req, res, next) => {
     let themeOverride = req.query.theme
@@ -84,11 +85,20 @@ module.exports = (app, utils) => {
     return next()
   })
 
+  function md5HashParts(fileName) {
+    const normalized = fileName.replace(/ /g, '_');
+    const h = crypto.createHash('md5').update(normalized, 'utf8').digest('hex');
+    return [h[0], h.slice(0,2)];
+  }
+
+
   app.get('/wiki/:page/:sub_page', (req, res, next) => {
     const pageName = req.params.page;
     if (pageName && pageName.startsWith('File:')) {
-        const encodedFileName = encodeURIComponent(pageName.split(':')[1])
-        const mediaPath = `/media/wikipedia/commons/thumb/${encodedFileName}`
+        const rawName = pageName.split(':')[1];
+        const encodedFileName = encodeURIComponent(rawName);
+        const [h1, h2] = md5HashParts(rawName);
+        const mediaPath = `/media/wikipedia/commons/${h1}/${h2}/${encodedFileName}`;
         return res.redirect(mediaPath)
     }
     return handleWikiPage(req, res, '/wiki/')
@@ -97,8 +107,10 @@ module.exports = (app, utils) => {
   app.get('/wiki/:page', (req, res, next) => {
     const pageName = req.params.page;
     if (pageName && pageName.startsWith('File:')) {
-        const encodedFileName = encodeURIComponent(pageName.split(':')[1])
-        const mediaPath = `/media/wikipedia/commons/thumb/${encodedFileName}`
+        const rawName = pageName.split(':')[1];
+        const encodedFileName = encodeURIComponent(rawName);
+        const [h1, h2] = md5HashParts(rawName);
+        const mediaPath = `/media/wikipedia/commons/${h1}/${h2}/${encodedFileName}`;
         return res.redirect(mediaPath)
     }
     return handleWikiPage(req, res, '/wiki/')
@@ -158,6 +170,18 @@ module.exports = (app, utils) => {
     return res.send(preferencesPage(req, res))
   })
 
+  // Helper to validate safe redirect paths
+  function isSafeRedirectPath(path) {
+    // Must start with a single slash, not double slash, not contain backslash, not contain protocol
+    return (
+      typeof path === 'string' &&
+      path.startsWith('/') &&
+      !path.startsWith('//') &&
+      !path.includes('\\') &&
+      !/^\/(http|https):/.test(path)
+    );
+  }
+
   app.post('/preferences', (req, res, next) => {
     const theme = req.body.theme
     const default_lang = req.body.default_lang
@@ -166,7 +190,7 @@ module.exports = (app, utils) => {
     res.cookie('theme', theme, { maxAge: 365 * 24 * 60 * 60 * 1000, httpOnly: true })
     res.cookie('default_lang', default_lang, { maxAge: 365 * 24 * 60 * 60 * 1000, httpOnly: true })
 
-    if(back === 'undefined' || !back.startsWith('/')) {
+    if (!isSafeRedirectPath(back)) {
       back = '/'
     }
 

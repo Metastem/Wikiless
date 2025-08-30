@@ -1,6 +1,6 @@
 #https://hub.docker.com/_/node/
 #https://github.com/GoogleContainerTools/distroless/blob/main/README.md
-FROM node:24.4-alpine3.21 AS build
+FROM node:24.6-alpine3.21 AS build
 WORKDIR /wikiless
 COPY . /wikiless
 RUN npm install --omit=optional

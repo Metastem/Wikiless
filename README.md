@@ -5,10 +5,11 @@
 
 **Wikiless** is a free, open-source alternative Wikipedia front-end focused on privacy. The project aims to provide users with a more private and anonymous browsing experience by minimizing data collection and tracking.
 
-## Key Features
+### Features
 - **Privacy-Focused:** Designed to enhance user privacy by limiting data tracking.
 - **Open Source:** Available for anyone to contribute and improve.
 - **Alternative Front-End:** Provides a different interface to access Wikipedia content.
+- **Censorship-Resistant:** Provides another way to access Wikipedia in multiple blocked countries.
 
 ## Installation
 

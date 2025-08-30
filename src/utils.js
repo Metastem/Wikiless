@@ -194,7 +194,7 @@ module.exports = function(redis) {
       data.html = data.html.replace(wikimedia_regex, '/media')
 
       // replace wiki links
-      const wiki_href_regx = /(href=\"(https:|http:|)\/\/([A-z.-]+\.)?(wikipedia.org|wikimedia.org|wikidata.org|mediawiki.org))/gm
+      const wiki_href_regx = /(href=\"(https:|http:|)\/\/([A-Za-z.-]+\.)?(wikipedia\.org|wikimedia\.org|wikidata\.org|mediawiki\.org))/gm
       data.html = data.html.replace(wiki_href_regx, 'href="')
 
       try {

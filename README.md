@@ -1,8 +1,6 @@
 # Wikiless
 
-[🇬🇧 English](README.md) | [🇨🇳 中文](Chinese.md)
-
----
+[🇬🇧 English](README.md) | [🇨🇳 中文](Chinese.md) | [🇮🇷 فارسی](Farsi.md)
 
 ![hidden_dimension](https://github.com/user-attachments/assets/4093053d-a7c4-45aa-8860-ea0f64a841e9)
 

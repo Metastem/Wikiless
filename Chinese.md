@@ -1,6 +1,6 @@
 # Wikiless
 
-[🇬🇧 English](README.md) | 🇨🇳 中文
+[🇬🇧 English](README.md) | [🇨🇳 中文](Chinese.md) | [🇮🇷 فارسی](Farsi.md)
 
 ---
 

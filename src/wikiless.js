@@ -1,4 +1,4 @@
-const config = require('../config')
+const config = require('../wikiless.config')
 const compression = require('compression')
 const path = require('path')
 const express = require('express')

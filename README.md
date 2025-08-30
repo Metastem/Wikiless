@@ -35,6 +35,7 @@ Contributions are welcome!
 - [ ] - Conditional edition redirection if an insance is banned - [#21](https://github.com/Metastem/Wikiless/issues/21)
 - [ ] - recurring download errors for MediaWiki CSS files
 - [ ] - Search route bug - [#166](https://github.com/Metastem/Wikiless/issues/166)
+- [ ] - Add different languages into this repo and help people in their countries get around their tyranny government censorship
 
 # License
 

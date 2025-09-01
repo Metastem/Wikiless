@@ -1,3 +1,5 @@
+[English](README.md) | [中文](Chinese.md)
+
 # Wikiless
 
 ![hidden_dimension](https://github.com/user-attachments/assets/4093053d-a7c4-45aa-8860-ea0f64a841e9)
@@ -9,7 +11,7 @@
 - **Privacy-Focused:** Designed to enhance user privacy by limiting data tracking.
 - **Open Source:** Available for anyone to contribute and improve.
 - **Alternative Front-End:** Provides a different interface to access Wikipedia content.
-- **Censorship-Resistant:** Provides another way to access Wikipedia in multiple blocked countries.
+- **Censorship-Resistant:** Provides another way to access Wikipedia in multiple blocked countries, Browse Wikipedia without VPN or socks.
 
 ## Installation
 

@@ -1,2 +1,5 @@
 .git*
 docker-compose.yml
+node_modules
+*.md
+.env*

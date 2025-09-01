@@ -1,6 +1,21 @@
 module.exports = (app, utils) => {
   const config = require('../wikiless.config')
   const path = require('path')
+  const { URL } = require('url')
+  const rateLimit = require('express-rate-limit')
+  const crypto = require('crypto')
+
+  // Rate limiter for PDF download route: max 100 requests per 15 minutes per IP
+  const pdfRateLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 60 minutes
+    max: 20, // limit each IP to 100 requests per windowMs
+  });
+
+  // Rate limiter for general GET route: max 100 requests per 15 minutes per IP
+  const generalRateLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 400, // limit each IP to 400 requests per windowMs
+  });
 
   app.all(/.*/, (req, res, next) => {
     let themeOverride = req.query.theme
@@ -24,7 +39,13 @@ module.exports = (app, utils) => {
     return next()
   })
 
-  app.get(/.*/, async (req, res, next) => {
+  function md5HashParts(fileName) {
+    const normalized = fileName.replace(/ /g, '_');
+    const h = crypto.createHash('md5').update(normalized, 'utf8').digest('hex');
+    return [h[0], h.slice(0,2)];
+  }
+
+  app.get(/.*/, generalRateLimiter, async (req, res, next) => {
     if(req.url.startsWith('/w/load.php')) {
       return res.sendStatus(404)
     }
@@ -87,8 +108,10 @@ module.exports = (app, utils) => {
   app.get('/wiki/:page/:sub_page', (req, res, next) => {
     const pageName = req.params.page;
     if (pageName && pageName.startsWith('File:')) {
-        const encodedFileName = encodeURIComponent(pageName.split(':')[1])
-        const mediaPath = `/media/wikipedia/commons/thumb/${encodedFileName}`
+        const rawName = pageName.split(':')[1]
+        const encodedFileName = encodeURIComponent(rawName)
+        const [h1, h2] = md5HashParts(rawName)
+        const mediaPath = `/media/wikipedia/commons/${h1}/${h2}/${encodedFileName}`
         return res.redirect(mediaPath)
     }
     return handleWikiPage(req, res, '/wiki/')
@@ -97,8 +120,10 @@ module.exports = (app, utils) => {
   app.get('/wiki/:page', (req, res, next) => {
     const pageName = req.params.page;
     if (pageName && pageName.startsWith('File:')) {
-        const encodedFileName = encodeURIComponent(pageName.split(':')[1])
-        const mediaPath = `/media/wikipedia/commons/thumb/${encodedFileName}`
+        const rawName = pageName.split(':')[1]
+        const encodedFileName = encodeURIComponent(rawName)
+        const [h1, h2] = md5HashParts(rawName)
+        const mediaPath = `/media/wikipedia/commons/${h1}/${h2}/${encodedFileName}`
         return res.redirect(mediaPath)
     }
     return handleWikiPage(req, res, '/wiki/')
@@ -124,7 +149,7 @@ module.exports = (app, utils) => {
     return handleWikiPage(req, res, '/wiki/Map')
   })
 
-  app.get('/api/rest_v1/page/pdf/:page', async (req, res, next) => {
+  app.get('/api/rest_v1/page/pdf/:page', pdfRateLimiter, async (req, res, next) => {
     if(!req.params.page) {
       return res.redirect('/')
     }
@@ -150,23 +175,52 @@ module.exports = (app, utils) => {
     return handleWikiPage(req, res, '/')
   })
 
-  app.get('/about', (req, res, next) => {
+  // Rate limiter for /about route: max 100 requests per 15 minutes per IP
+  const aboutLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 300, // limit each IP to 300 requests per windowMs
+    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  });
+
+  app.get('/about', aboutLimiter, (req, res, next) => {
     return res.sendFile(path.join(__dirname, '../static/about.html'))
   })
 
   app.get('/preferences', (req, res, next) => {
-    return res.send(preferencesPage(req, res))
-  })
+    // Pass CSRF token to preferences page
+    return res.send(preferencesPage(req, res, req.csrfToken()))
+})
+
+
+  // Helper to validate safe redirect paths
+  function isSafeRedirectPath(path) {
+    // Must start with a single slash, not double slash, not contain backslash, not contain protocol
+    return (
+      typeof path === 'string' &&
+      path.startsWith('/') &&
+      !path.startsWith('//') &&
+      !path.includes('\\') &&
+      !/^\/(http|https):/.test(path)
+    );
+  }
 
   app.post('/preferences', (req, res, next) => {
     const theme = req.body.theme
     const default_lang = req.body.default_lang
-    let back = req.url.split('?back=')[1]
+    // Use URLSearchParams to robustly extract 'back' from the query string
+    let back = '/'
+    try {
+      const urlObj = new URL(req.originalUrl, `http://${req.headers.host}`);
+      back = urlObj.searchParams.get('back') || '/';
+    } catch (e) {
+      back = '/';
+    }
 
     res.cookie('theme', theme, { maxAge: 365 * 24 * 60 * 60 * 1000, httpOnly: true })
     res.cookie('default_lang', default_lang, { maxAge: 365 * 24 * 60 * 60 * 1000, httpOnly: true })
 
-    if(back === 'undefined' || !back.startsWith('/')) {
+    if (!isSafeRedirectPath(back)) {
       back = '/'
     }
 

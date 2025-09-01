@@ -5,17 +5,18 @@
 
 **Wikiless** is a free, open-source alternative Wikipedia front-end focused on privacy. The project aims to provide users with a more private and anonymous browsing experience by minimizing data collection and tracking.
 
-## Key Features
+### Features
 - **Privacy-Focused:** Designed to enhance user privacy by limiting data tracking.
 - **Open Source:** Available for anyone to contribute and improve.
 - **Alternative Front-End:** Provides a different interface to access Wikipedia content.
+- **Censorship-Resistant:** Provides another way to access Wikipedia in multiple blocked countries.
 
 ## Installation
 
 To run Wikiless, follow these steps:
 
 ```
-https://github.com/Metastem/Wikiless/wiki
+https://github.com/V4NT-ORG/Wikiless/wiki
 ```
 
 # Usage
@@ -24,7 +25,20 @@ Visit ```http://localhost:8180``` in your web browser to use Wikiless locally.
 
 # Contributing
 
-Contributions are welcome! 
+Contributions are welcome!
+
+# TODO
+
+- [x] - Images not loading when clicking on their thumbnails - [#161](https://github.com/Metastem/Wikiless/issues/161) and [#162](https://github.com/Metastem/Wikiless/pull/162)
+- [x] - When hosted with another default language, all other language links break - [#161](https://github.com/Metastem/Wikiless/issues/161)
+- [x] - Finally got around and fixed the 10 security issues in the [Code Scanning](https://github.com/V4NT-ORG/Wikiless-Reborn/security/code-scanning)
+- [x] - Finally got around to further harden the ```Dockerfile```
+- [x] - Fixed some minor bugs and added memory and cpu limits in the [```docker-compose.yml```](https://www.baeldung.com/ops/docker-memory-limit)
+- [ ] - Support for other Wikipedia Styles - [#25](https://github.com/Metastem/Wikiless/issues/25)
+- [ ] - Conditional edition redirection if an insance is banned - [#21](https://github.com/Metastem/Wikiless/issues/21)
+- [ ] - recurring download errors for MediaWiki CSS files
+- [ ] - Search route bug - [#166](https://github.com/Metastem/Wikiless/issues/166)
+- [ ] - Add different languages into this repo and help people in their countries get around their tyranny government censorship
 
 # License
 

@@ -1,49 +1,19 @@
 version: 2
 updates:
-  # Schedule for checking updates
-  schedule:
-    interval: daily
-
-  # CSS dependencies
+# Maintain dependencies for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+      
+    # Maintain dependencies for npm
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "daily"
-    labels:
-      - "css"
-    allowed-updates:
-      - match:
-          update-type: "all"
-
-  # JavaScript dependencies
-  - package-ecosystem: "npm"
-    directory: "/"
-    schedule:
-      interval: "daily"
-    labels:
-      - "javascript"
-    allowed-updates:
-      - match:
-          update-type: "all"
-
-  # Other dependencies
-  - package-ecosystem: "npm"
-    directory: "/"
-    schedule:
-      interval: "daily"
-    labels:
-      - "other"
-    allowed-updates:
-      - match:
-          update-type: "all"
 
   # Docker dependencies
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
       interval: "daily"
-    labels:
-      - "docker"
-    allowed-updates:
-      - match:
-          update-type: "all"

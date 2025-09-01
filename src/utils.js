@@ -188,7 +188,7 @@ module.exports = function(redis) {
        // Extract the language code from the subdomain (e.g., "de" from "https://de.wikipedia.org/wiki/Page")
        let lang_code = hostname.split('.wikipedia.org')[0]
        // Extract the page path from the original URL (e.g., "/wiki/Page")
-       let page_path = urlObj.pathname
+       let page_path = new URL(href, 'https://en.wikipedia.org').pathname
        // Create a relative URL with the language parameter
        href = `${page_path}?lang=${lang_code}`
        lang_links[i].setAttribute('href', href)

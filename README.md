@@ -1,4 +1,4 @@
-[English](README.md) | [中文](Chinese.md)
+[English](README.md) | [中文](Chinese.md) | [فارسی](Persian.md)
 
 # Wikiless
 

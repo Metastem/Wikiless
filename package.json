@@ -11,7 +11,7 @@
     "got": "^14.4.7",
     "node-html-parser": "^7.0.1",
     "redis": "^5.8.2",
-    "express-rate-limit": "^8.0.1",
+    "express-rate-limit": "^8.1.0",
     "lusca": "^1.7.0",
     "connect-redis": "^9.0.0",
     "express-session": "^1.18.2"

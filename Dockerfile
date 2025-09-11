@@ -6,7 +6,7 @@
 ARG UID=200003
 ARG GID=200003
 
-FROM node:24.7-alpine3.21 AS build
+FROM node:24.8-alpine3.21 AS build
 
 ARG UID=200003
 ARG GID=200003

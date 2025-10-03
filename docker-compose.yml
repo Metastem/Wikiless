@@ -27,7 +27,7 @@ services:
   wikiless_redis:
     container_name: wikiless_redis
     hostname: wikiless_redis
-    image: redis:7.4-alpine
+    image: redis:8-alpine
     restart: always
     networks:
       - wikiless_net

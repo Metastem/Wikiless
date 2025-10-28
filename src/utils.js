@@ -66,14 +66,15 @@ module.exports = function(redis) {
 
   this.applyUserMods = (data, theme, lang, isMobile=false) => {
     /**
-    * We have already processed the HTML, but we haven't applied the user's
-    * cookie specific modifications to it yet. Let's do it.
+    * Apply user-specific modifications to the processed HTML.
+    * This includes theme, language, and mobile-specific adjustments.
     */
 
     // load custom language specific languages
     let lang_suffix = ''
     let load_custom_styles = ['de', 'fr', 'ko', 'vi']
 
+    
     if(load_custom_styles.includes(lang)) {
       lang_suffix = '_' + lang
     }
@@ -102,6 +103,7 @@ module.exports = function(redis) {
       data = data.replace('</head>', `<link rel="stylesheet" href="/mobile.css"></head>`)
     }
 
+    
     return data
   }
 
@@ -147,25 +149,21 @@ module.exports = function(redis) {
       for(let i = 0; i < forms.length; i++) {
         forms[i].insertAdjacentHTML('afterbegin', `<input type="hidden" name="lang" value="${lang}">`)
       }
-
       // remove #p-wikibase-otherprojects
       let wikibase_links = data.html.querySelector('#p-wikibase-otherprojects')
       if(wikibase_links) {
         wikibase_links.remove()
       }
-
       // remove all <script> elements
       let script_elements = data.html.querySelectorAll('script')
       for(let i = 0; i < script_elements.length; i++) {
         script_elements[i].remove()
       }
-
       // remove all <iframe> elements
       let iframe_elements = data.html.querySelectorAll('iframe')
       for(let i = 0; i < iframe_elements.length; i++) {
         iframe_elements[i].remove()
       }
-
       // remove all JavaScript event attributes
       let event_attributes = ['[onAbort]', '[onBlur]', '[onChange]', '[onClick]', '[onDblClick]', '[onError]', '[onFocus]', '[onKeydown]', '[onKeypress]', '[onKeyup]', '[onLoad]'
 , '[onMousedown]', '[onMousemove]', '[onMouseout]', '[onMouseover]', '[onMouseUp]', '[onReset]', '[onSelect]', '[onSubmit]', '[onUnload]']
@@ -179,8 +177,9 @@ module.exports = function(redis) {
       }
 
       /**
-      * Remove the language subdomain from the sidebar language switchers.
-      * Then append the language as a URL query param.
+      * Process language links in the sidebar:
+      * - Remove language subdomains.
+      * - Append language as a query parameter.
       */
       let lang_links = data.html.querySelectorAll('#p-lang .interlanguage-link a')
       for(let i = 0; i < lang_links.length; i++) {
@@ -192,7 +191,6 @@ module.exports = function(redis) {
       }
 
       data.html = data.html.toString()
-
       // replace upload.wikimedia.org with /media
       const upload_wikimedia_regx = /((https:|http:|)\/\/?upload\.wikimedia\.org)/gm
       data.html = data.html.replace(upload_wikimedia_regx, '/media')
@@ -235,7 +233,6 @@ module.exports = function(redis) {
     let path = ''
     let domain = 'upload.wikimedia.org'
     let wikimedia_path = ''
-
     switch (wiki_domain) {
       case 'maps.wikimedia.org':
         path = req.url.split('/media/maps_wikimedia_org')[1]
@@ -257,7 +254,6 @@ module.exports = function(redis) {
         path = req.url.split('/media')[1]
         wikimedia_path = path + params
     }
-
     url = new URL(`https://${domain}${wikimedia_path}`)
     const file = await saveFile(url, path)
 
@@ -341,25 +337,21 @@ module.exports = function(redis) {
           sub_page = `/${sub_page}`
         }
 
-        // language variants
-        if(typeof validLang(lang) === 'string') {
-          wiki = lang
-          lang = lang.split('-')[0]
-        }
-
-        url = `https://${lang}.wikipedia.org/${wiki}/${page}${sub_page}`
+        // Ensure the language is mapped to the correct subdomain
+        url = `https://${this.mapToWikiSubdomain(lang)}.wikipedia.org/${wiki}/${page}${sub_page}`
         break
       case '/w/':
         let file = req.params.file
-        url = `https://${lang}.wikipedia.org/w/${file}`
+        url = `https://${this.mapToWikiSubdomain(lang)}.wikipedia.org/w/${file}`
         break
       case '/wiki/Map':
         page = 'Special:Map'
         sub_page = req.params['0'] || ''
-        url = `https://${lang}.wikipedia.org/wiki/${page}/${sub_page}`
+        url = `https://${this.mapToWikiSubdomain(lang)}.wikipedia.org/wiki/${page}/${sub_page}`
         break
       case '/':
-        url = `https://${lang}.wikipedia.org/`
+        // Ensure the root path redirects to the correct language homepage
+        url = `https://${this.mapToWikiSubdomain(lang)}.wikipedia.org/`
         break
     }
 
@@ -386,6 +378,7 @@ module.exports = function(redis) {
             let lang_code = result.url.split('.wikipedia.org')[0].split('//')[1]
             return res.redirect(`/api/rest_v1/page/pdf/${page}/?lang=${lang_code}`)
           }
+
         }
 
         if(prefix) {
@@ -409,52 +402,69 @@ module.exports = function(redis) {
     return res.status(500).send(process_html.reason)
   }
 
+  this.mapToWikiSubdomain = (lang) => {
+    if(!lang) return config.default_lang
+    const l = String(lang).toLowerCase()
+    const map = {
+      'zh-hans': 'zh',
+      'zh-tw': 'zh',
+      'zh-hk': 'zh',
+      'zh-mo': 'zh',
+      'zh-min-nan': 'nan',
+      'zh-yue': 'yue',
+      'zh-classical': 'lzh'
+    }
+    if(map[l]) return map[l]
+    return l.split('-')[0]
+  }
+
+  // Helper to check if a language code is Simplified Chinese
+  this.isSimplifiedChinese = (lang) => {
+    if(!lang) return false
+    const l = String(lang).toLowerCase()
+    return l === 'zh-hans'
+  }
+
   this.validLang = (lang, return_langs=false) => {
-    const lang_variants = ['zh-hans','zh-hant','zh-cn','zh-hk','zh-mo','zh-my','zh-sg','zh-tw']
-    const valid_langs = ['ab','ace','ady','af','ak','als','am','an','ang','ar',
-    'arc','ary','arz','as','ast','atj','av','avk','awa','ay','az','azb','ba',
-    'ban','bar','bat-smg','bcl','be','be-tarask','bg','bh','bi','bjn','bm','bn',
-    'bo','bpy','br','bs','bug','bxr','ca','cbk-zam','cdo','ce','ceb','ch','chr',
-    'chy','ckb','co','cr','crh','cs','csb','cu','cv','cy','da','de','din','diq',
-    'dsb','dty','dv','dz','ee','el','eml','en','eo','es','et','eu','ext','fa',
-    'ff','fi','fiu-vro','fj','fo','fr','frp','frr','fur','fy','ga','gag','gan',
-    'gcr','gd','gl','glk','gn','gom','gor','got','gu','gv','ha','hak','haw',
-    'he','hi','hif','hr','hsb','ht','hu','hy','hyw','ia','id','ie','ig','ik',
-    'ilo','inh','io','is','it','iu','ja','jam','jbo','jv','ka','kaa','kab',
-    'kbd','kbp','kg','ki','kk','kl','km','kn','ko','koi','krc','ks','ksh','ku',
-    'kv','kw','ky','la','lad','lb','lbe','lez','lfn','lg','li','lij','lld',
-    'lmo','ln','lo','lt','ltg','lv','mad','mai','map-bms','mdf','mg','mhr','mi',
-    'min','mk','ml','mn','mnw','mr','mrj','ms','mt','mwl','my','myv','mzn','na',
-    'nah','nap','nds','nds-nl','ne','new','nia','nl','nn','no','nostalgia',
-    'nov','nqo','nrm','nso','nv','ny','oc','olo','om','or','os','pa','pag',
-    'pam','pap','pcd','pdc','pfl','pi','pih','pl','pms','pnb','pnt','ps','pt',
-    'qu','rm','rmy','rn','ro','roa-rup','roa-tara','ru','rue','rw','sa','sah',
-    'sat','sc','scn','sco','sd','se','sg','sh','shn','si','simple','sk','skr',
-    'sl','sm','smn','sn','so','sq','sr','srn','ss','st','stq','su','sv','sw',
-    'szl','szy','ta','tcy','te','tet','tg','th','ti','tk','tl','tn','to','tpi',
-    'tr','ts','tt','tum','tw','ty','tyv','udm','ug','uk','ur','uz','ve','vec',
-    'vep','vi','vls','vo','wa','war','wo','wuu','xal','xh','xmf','yi','yo','za',
-    'zea','zh','zh-classical','zh-min-nan','zh-yue','zu']
+    // Comprehensive list of Wikimedia-supported language codes including variants.
+    const valid_langs = [
+      'aa','ab','ace','ady','af','ak','als','am','an','ang','ar','arc','arn','aro','ary','arz','as','ast','atj','av','avk','awa','ay','az','azb',
+      'ba','bar','bat-smg','bcl','be','be-tarask','bg','bho','bi','bjn','bm','bn','bo','bpy','br','bs','bug','bxr','ca','cbk-zam','cdo','ce','ceb',
+      'ch','chr','ckb','co','cr','crh','cs','csb','cu','cv','cy','da','de','din','diq','dsb','dty','dv','dz','ee','el','eml','en','eo','es','et','eu',
+      'ext','fa','ff','fi','fiu-vro','fj','fo','fr','frp','frr','fur','fy','ga','gag','gan','gcr','gd','gl','glk','gn','gom','gor','got','gu','gv',
+      'ha','hak','haw','he','hi','hif','hr','hsb','ht','hu','hy','hyw','ia','id','ie','ig','ik','ilo','inh','io','is','it','iu','ja','jam','jbo','jv',
+      'ka','kaa','kab','kbd','kbp','kg','ki','kk','kl','km','kn','ko','koi','krc','ks','ksh','ku','kv','kw','ky','la','lad','lb','lbe','lez','lfn','lg',
+      'li','lij','lld','lmo','ln','lo','lt','ltg','lv','map-bms','mai','mg','mhr','mi','min','mk','ml','mn','mnw','mr','mrj','ms','mt','mwl','my','myv','mzn',
+      'na','nah','nap','nds','nds-nl','ne','new','ng','nl','nn','no','nov','nqo','nrm','nso','nv','ny','oc','olo','om','or','os','pa','pag','pam','pap',
+      'pcd','pdc','pfl','pi','pih','pl','pms','pnb','pnt','ps','pt','qu','rm','rmy','rn','ro','roa-rup','roa-tara','ru','rue','rw','sa','sah','sc','scn','sco',
+      'sd','se','sg','sh','shn','si','simple','sk','skr','sl','sm','smn','sn','so','sq','sr','srn','ss','st','stq','su','sv','sw','szl','szy','ta','tcy','te',
+      'tet','tg','th','ti','tk','tl','tn','to','tpi','tr','ts','tt','tum','tw','ty','tyv','udm','ug','uk','ur','uz','ve','vec','vep','vi','vls','vo','wa',
+      'war','wo','wuu','xal','xh','xmf','yi','yo','za','zea','zh','zh-classical','zh-min-nan','zh-yue','zu',
+      // explicit Chinese variants for manual selection
+      'zh-hans','zh-tw','zh-hk','zh-mo'
+    ]
 
     if(return_langs) {
       return valid_langs
     }
 
-    if(valid_langs.includes(lang)) {
-      return true
-    }
-    if(lang_variants.includes(lang)) {
-      return lang
-    }
-
-    return false
+    return valid_langs.includes(lang)
   }
 
   this.validHtml = (html) => {
-    if(html && parser.valid(html)) {
-      return true
+    if (!html) return false;
+    try {
+      // Attempt to parse the HTML, but don't fail on minor issues
+      const parsed = parser.parse(html);
+      // Additional check for valid structure if needed
+      if (parsed && parsed.childNodes.length > 0) {
+        return true;
+      }
+      return false;
+    } catch (err) {
+      console.error('HTML validation error:', err);
+      return false;
     }
-    return false
   }
 
   this.wikilessLogo = () => {
@@ -474,20 +484,73 @@ module.exports = function(redis) {
     return false
   }
   
+  // Find language code by its display name (reverse of getLanguageDisplayName)
+  this.findLangCodeByDisplayName = (name) => {
+    if(!name) return null
+    const lower = String(name).toLowerCase()
+    const langs = this.validLang('', true)
+    for(let i = 0; i < langs.length; i++) {
+      const dn = String(this.getLanguageDisplayName(langs[i])).toLowerCase()
+      if(dn === lower) return langs[i]
+    }
+    return null
+  }
+
   this.getLang = (req=false) => {
     if(!req) {
       return config.default_lang
     }
 
+    // check query param first
     if(req.query && req.query.lang) {
-      return req.query.lang.toLowerCase()
-     }
+      const q = String(req.query.lang).toLowerCase()
+      if(this.validLang(q)) return q
+      const mapped = this.findLangCodeByDisplayName(q)
+      if(mapped) return mapped
+      return config.default_lang
+    }
 
+    // then cookies
     if(req.cookies && req.cookies.default_lang) {
-      return req.cookies.default_lang
+      const c = String(req.cookies.default_lang).toLowerCase()
+      if(this.validLang(c)) return c
+      const mapped = this.findLangCodeByDisplayName(c)
+      if(mapped) return mapped
     }
 
     return config.default_lang
+  }
+  
+  // Return the language name in its own locale when possible (e.g. 'zh' -> '中文')
+  this.getLanguageDisplayName = (code) => {
+    if(!code) return code
+
+    // special mapping for Chinese variants as requested
+    const specialMap = {
+      'zh-hans': '简体中文',
+      'zh': '繁體中文',
+      'zh-tw': '繁體中文 台湾',
+      'zh-hk': '繁體中文 香港',
+      'zh-mo': '繁體中文 澳門',
+      'zh-classical': '文言文',
+      'zh-min-nan': '閩南語',
+      'zh-yue': '粵語'
+    }
+
+    if(specialMap[code]) return specialMap[code]
+
+    try {
+      // Use base language (before '-') as locale for DisplayNames
+      const base = code.split('-')[0]
+      if(typeof Intl !== 'undefined' && Intl.DisplayNames) {
+        const dn = new Intl.DisplayNames([base], { type: 'language' })
+        const name = dn.of(base)
+        if(name) return name
+      }
+    } catch (e) {
+      // fall through to return code
+    }
+    return code
   }
 
   this.preferencesPage = (req, res) => {
@@ -500,7 +563,9 @@ module.exports = function(redis) {
       if(valid_langs[i] === default_lang) {
         selected = 'selected'
       }
-      lang_select += `<option value="${valid_langs[i]}" ${selected}>${valid_langs[i]}</option>`
+      
+      const displayName = this.getLanguageDisplayName(valid_langs[i])
+      lang_select += `<option value="${valid_langs[i]}" ${selected}>${displayName}</option>`
     }
 
     lang_select += '</select>'

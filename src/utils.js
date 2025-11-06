@@ -406,23 +406,12 @@ module.exports = function(redis) {
     if(!lang) return config.default_lang
     const l = String(lang).toLowerCase()
     const map = {
-      'zh-hans': 'zh',
-      'zh-tw': 'zh',
-      'zh-hk': 'zh',
-      'zh-mo': 'zh',
       'zh-min-nan': 'nan',
       'zh-yue': 'yue',
       'zh-classical': 'lzh'
     }
     if(map[l]) return map[l]
     return l.split('-')[0]
-  }
-
-  // Helper to check if a language code is Simplified Chinese
-  this.isSimplifiedChinese = (lang) => {
-    if(!lang) return false
-    const l = String(lang).toLowerCase()
-    return l === 'zh-hans'
   }
 
   this.validLang = (lang, return_langs=false) => {
@@ -439,10 +428,7 @@ module.exports = function(redis) {
       'pcd','pdc','pfl','pi','pih','pl','pms','pnb','pnt','ps','pt','qu','rm','rmy','rn','ro','roa-rup','roa-tara','ru','rue','rw','sa','sah','sc','scn','sco',
       'sd','se','sg','sh','shn','si','simple','sk','skr','sl','sm','smn','sn','so','sq','sr','srn','ss','st','stq','su','sv','sw','szl','szy','ta','tcy','te',
       'tet','tg','th','ti','tk','tl','tn','to','tpi','tr','ts','tt','tum','tw','ty','tyv','udm','ug','uk','ur','uz','ve','vec','vep','vi','vls','vo','wa',
-      'war','wo','wuu','xal','xh','xmf','yi','yo','za','zea','zh','zh-classical','zh-min-nan','zh-yue','zu',
-      // explicit Chinese variants for manual selection
-      'zh-hans','zh-tw','zh-hk','zh-mo'
-    ]
+      'war','wo','wuu','xal','xh','xmf','yi','yo','za','zea','zh','zh-classical','zh-min-nan','zh-yue','zu',]
 
     if(return_langs) {
       return valid_langs
@@ -527,11 +513,7 @@ module.exports = function(redis) {
 
     // special mapping for Chinese variants as requested
     const specialMap = {
-      'zh-hans': '简体中文',
-      'zh': '繁體中文',
-      'zh-tw': '繁體中文 台湾',
-      'zh-hk': '繁體中文 香港',
-      'zh-mo': '繁體中文 澳門',
+      'zh': '中文',
       'zh-classical': '文言文',
       'zh-min-nan': '閩南語',
       'zh-yue': '粵語'

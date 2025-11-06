@@ -6,7 +6,7 @@ html.is-mobile body {
   background: #fff;
   line-height: 1.7;
   overflow-x: hidden;
-  font-size: 1.05rem !important;
+  font-size: 1.4rem !important;
   color: #111 !important;
 }
 
@@ -24,8 +24,8 @@ html.is-mobile.home #mw-panel {
   position: relative;
   width: auto !important;
   float: none !important;
-  margin: 0 auto 10px auto !important;
-  padding: 0 12px;
+  margin: 0 auto 12px auto !important;
+  padding: 0 14px;
   box-sizing: border-box;
 }
 html.is-mobile:not(.home) #mw-panel {
@@ -43,11 +43,12 @@ html.is-mobile #mw-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 12px;
-  gap: 8px;
+  padding: 10px 14px;
+  gap: 10px;
   box-sizing: border-box;
   transition: transform 0.3s ease;
   will-change: transform;
+  font-size: 1rem !important;
 }
 
 html.is-mobile #searchform {
@@ -60,7 +61,7 @@ html.is-mobile #searchInput {
   width: 100%;
   font-size: 15px;
   padding: 8px 10px;
-  border-radius: 6px;
+  border-radius: 7px;
   border: 1px solid #ccc;
   box-sizing: border-box;
 }
@@ -70,13 +71,14 @@ html.is-mobile #p-personal {
   gap: 10px;
   flex-shrink: 0;
   align-items: center;
+  font-size: 0.9rem !important;
 }
 html.is-mobile #p-personal a {
   color: #0366d6;
   text-decoration: none;
-  font-size: 0.9rem;
-  padding: 4px 6px;
-  border-radius: 6px;
+  font-size: 0.9rem !important;
+  padding: 5px 7px;
+  border-radius: 7px;
 }
 html.is-mobile #p-personal a:hover {
   background: rgba(0, 0, 0, 0.05);
@@ -85,18 +87,17 @@ html.is-mobile #p-personal a:hover {
 html.is-mobile body {
   padding-top: 0 !important;
 }
-
 html.is-mobile #content,
 html.is-mobile .mw-body,
 html.is-mobile .vector-body,
 html.is-mobile .mw-content-container,
 html.is-mobile .mw-parser-output {
   margin: 0 !important;
-  padding: 14px 16px !important;
+  padding: 16px 18px !important;
   max-width: 100% !important;
   overflow-wrap: break-word;
   box-sizing: border-box;
-  font-size: 1.05rem !important;
+  font-size: 1.4rem !important;
   line-height: 1.7 !important;
   color: #111 !important;
 }
@@ -115,20 +116,20 @@ html.is-mobile div {
 html.is-mobile #p-lang ul {
   display: flex;
   overflow-x: auto;
-  padding: 6px 0;
-  gap: 8px;
+  padding: 7px 0;
+  gap: 10px;
   white-space: nowrap;
   list-style: none;
 }
 html.is-mobile #p-lang a {
   display: inline-block;
-  padding: 6px 12px;
+  padding: 7px 14px;
   border-radius: 999px;
   background: #f6f6f6;
   border: 1px solid rgba(0,0,0,0.1);
   text-decoration: none;
   color: #000;
-  font-size: 0.9rem;
+  font-size: 1.25rem !important;
 }
 
 html.is-mobile table {
@@ -139,8 +140,8 @@ html.is-mobile table {
 html.is-mobile th,
 html.is-mobile td {
   border-bottom: 1px solid rgba(0,0,0,0.05);
-  padding: 6px 8px;
-  font-size: 1.05rem !important;
+  padding: 9px 12px;
+  font-size: 1.4rem !important;
   line-height: 1.7 !important;
 }
 html.is-mobile .thumb img {
@@ -149,16 +150,18 @@ html.is-mobile .thumb img {
   display: block;
   margin: 0 auto;
 }
+
 html.is-mobile #footer {
-  font-size: 0.95rem;
-  padding: 20px;
+  font-size: 1.26rem;
+  padding: 24px;
   text-align: center;
   color: #444;
 }
 
 html.is-mobile .firstHeading {
-  margin-top: 0.8em !important;
-  padding-top: 0.4em !important;
+  margin-top: 1em !important;
+  padding-top: 0.5em !important;
+  font-size: 1.7rem !important;
 }
 
 html.is-mobile table.infobox,
@@ -178,58 +181,43 @@ html.is-mobile .mw-parser-output > table.infobox-vevent {
   box-sizing: border-box !important;
   overflow: hidden;
 }
-
-html.is-mobile table.infobox colgroup,
-html.is-mobile table.infobox col {
-  width: auto !important;
-  display: table-column !important;
-}
-
-html.is-mobile table.infobox tr {
-  display: table-row !important;
-}
 html.is-mobile table.infobox th,
 html.is-mobile table.infobox td {
   display: table-cell !important;
   vertical-align: top !important;
   word-wrap: break-word !important;
   white-space: normal !important;
-  padding: 10px 12px !important;
+  padding: 12px 14px !important;
   border: none !important;
   box-sizing: border-box !important;
-  font-size: 1.05rem !important;
+  font-size: 1.4rem !important;
   line-height: 1.7 !important;
   color: #111 !important;
 }
-
 html.is-mobile table.infobox caption {
   display: table-caption !important;
   caption-side: top !important;
   text-align: center !important;
   font-weight: 700 !important;
-  font-size: 1.1rem !important;
-  padding: 8px 12px !important;
+  font-size: 1.5rem !important;
+  padding: 9px 14px !important;
   background: #fafafa !important;
 }
-
-html.is-mobile table.infobox img,
-html.is-mobile table.infobox-vevent img {
+html.is-mobile table.infobox img {
   display: block !important;
   max-width: 100% !important;
   width: auto !important;
   height: auto !important;
-  margin: 8px auto !important;
+  margin: 10px auto !important;
   border-radius: 6px;
   object-fit: contain !important;
 }
-
 html.is-mobile table.infobox th[scope=row] {
   font-weight: 700 !important;
   text-align: left !important;
   display: table-cell !important;
   vertical-align: top !important;
 }
-
 html.is-mobile table.infobox [style*="width"] {
   width: auto !important;
   max-width: 100% !important;
@@ -239,4 +227,13 @@ html.is-mobile table.infobox [style*="width"] {
   html.is-mobile table.infobox {
     table-layout: auto !important;
   }
+}
+
+html.is-mobile .mw-parser-output > p,
+html.is-mobile .mw-parser-output > ul,
+html.is-mobile .mw-parser-output > ol,
+html.is-mobile .mw-parser-output > div:not([class]),
+html.is-mobile .mw-parser-output > span:not([class]) {
+  font-size: 1.55rem !important;
+  line-height: 1.75 !important;
 }

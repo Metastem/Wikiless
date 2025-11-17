@@ -31,8 +31,6 @@ jobs:
         run: npm ci
 
       - name: Run tests
-        env:
-          NODE_OPTIONS: '--no-experimental-webstorage'
         run: npm test
 
       - name: Security audit

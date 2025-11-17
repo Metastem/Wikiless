@@ -18,7 +18,7 @@
     "supertest": "^7.1.4"
   },
   "scripts": {
-    "test": "node --localstorage-file=.jest-localstorage.json ./node_modules/jest/bin/jest.js --coverage",
+    "test": "jest --coverage",
     "start": "node src/wikiless.js"
   },
   "repository": {

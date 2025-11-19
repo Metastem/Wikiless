@@ -10,7 +10,7 @@
     "express": "^5.1.0",
     "got": "^14.6.4",
     "node-html-parser": "^7.0.1",
-    "redis": "^5.9.0"
+    "redis": "^5.10.0"
   },
   "devDependencies": {
     "jest": "^29.7.0",

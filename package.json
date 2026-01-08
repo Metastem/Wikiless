@@ -4,7 +4,7 @@
   "description": "A free open source alternative Wikipedia front-end focused on privacy.",
   "main": "src/wikiless.js",
   "dependencies": {
-    "body-parser": "^2.2.1",
+    "body-parser": "^2.2.2",
     "compression": "^1.8.1",
     "cookie-parser": "^1.4.7",
     "express": "^5.2.1",

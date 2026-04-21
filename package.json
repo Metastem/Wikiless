@@ -8,7 +8,7 @@
     "compression": "^1.8.1",
     "cookie-parser": "^1.4.7",
     "express": "^5.2.1",
-    "got": "^15.0.2",
+    "got": "^15.0.3",
     "node-html-parser": "^7.1.0",
     "redis": "^5.12.1"
   },
